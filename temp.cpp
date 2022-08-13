@@ -112,6 +112,69 @@ class Trie{
   }
 
 };
+/Segment tree(to find sum of a given range in logn time && update values in a given range in logn time )
+  int a[100005];
+int seg[4*100005];
+int lazy[4*100005];
+void build(int id,int l,int r){ // to build the segment tree
+if(l==r){
+    seg[id]=a[l];
+    return;
+}
+int mid=(l+r)/2;
+build(2*id+1,l,mid);
+build(2*id+2,mid+1,r);
+seg[id]=seg[2*id+1]+seg[2*id+2]; // for max of range just change this statement
+
+}
+int query(int id,int low,int high,int l,int r){ // query to find max in a range
+  if(r<low || l>high) return INT_MIN;
+  if(low>=l && high<=r) return seg[id];
+  int mid=(low+high)/2;
+  int left=query(2*id+1,low,mid,l,r);
+  int right=query(2*id+2,mid+1,high,l,r);
+  return max(left,right);
+
+}
+void pointupdate(int id,int l,int r,int i,int val){ // to update only one value in the array
+if(l==r) a[l]+=val,seg[id]+=val;
+else {
+    int mid=(l+r)/2;
+    if(i>=l && i<=mid) pointupdate(2*id+1,l,mid,i,val);
+    else pointupdate(2*id+2,mid+1,r,i,val);
+    seg[id]=seg[2*id+1]+seg[2*id+2];
+}
+
+}
+void rangeupdate(int id,int low,int high,int l,int r,int val){ // to update the whole range
+ if(lazy[id]){
+    seg[id]+=(lazy[id]*(high-low+1));
+    if(low!=high) lazy[2*id+1]+=lazy[id],lazy[2*id+2]+=lazy[id]; }
+    lazy[id]=0;
+    if(r<low || l>high || low>high) return;
+    if(low>=l && high<=r){
+        seg[id]+=(high-low+1)*val;
+        if(low!=high) lazy[2*id+1]+=val,lazy[2*id+2]+=val;
+        return;
+    }
+    int mid=(low+high)/2;
+    rangeupdate(2*id+1,low,mid,l,r,val);
+    rangeupdate(2*id+2,mid+1,high,l,r,val);
+    seg[id]=seg[2*id+1]+seg[2*id+2];
+}
+int querysumlazy(int id,int low,int high,int l,int r){ // to find the sum of a given range
+   if(lazy[id]){
+    seg[id]+=(lazy[id]*(high-low+1));
+    if(low!=high) lazy[2*id+1]+=lazy[id],lazy[2*id+2]+=lazy[id]; }
+    lazy[id]=0;
+  if(r<low || l>high || low>high) return 0;
+  if(low>=l && high<=r) return seg[id];
+  int mid=(low+high)/2;
+  int x=querysumlazy(2*id+1,low,mid,l,r);
+  int y=querysumlazy(2*id+2,mid+1,high,l,r);
+  return x+y;
+
+}
 // Binary exponentiaion
 int be(int x,int y)
 {
