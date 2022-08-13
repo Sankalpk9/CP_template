@@ -112,7 +112,7 @@ class Trie{
   }
 
 };
-/Segment tree(to find sum of a given range in logn time && update values in a given range in logn time )
+//Segment tree(to find sum of a given range in logn time && update values in a given range in logn time )
   int a[100005];
 int seg[4*100005];
 int lazy[4*100005];
